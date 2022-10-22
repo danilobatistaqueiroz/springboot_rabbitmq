@@ -1,0 +1,42 @@
+version: "3.2"
+services:
+  server4:
+    image: rabbitmq:3.10.9-management
+    hostname: server4
+    container_name: 'server4'
+    ports:
+    - "5674:5674"
+    - "15674:15674"
+    - "5554:5554"
+    - "15694:15694"
+    volumes:
+#     - ./advanced.config:/etc/rabbitmq/advanced.config
+    - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    - ./mnesia:/var/lib/rabbitmq/mnesia/rabbit@server4
+    - type: bind
+      source: $PWD/advanced.config
+      target: /etc/rabbitmq/advanced.config
+    - type: bind
+      source: $PWD/.bash_history
+      target: /var/lib/rabbitmq/.bash_history
+    - type: bind
+      source: $PWD/.erlang.cookie
+      target: /var/lib/rabbitmq/.erlang.cookie
+    networks:
+    - rabbitmq_s_net
+    - rabbitmq_f_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+    - RABBITMQ_NODENAME=rabbit@server4
+    - RABBITMQ_NODE_PORT=5674
+    
+networks:
+  rabbitmq_s_net:
+    external: true
+    name: sales_net
+  rabbitmq_f_net:
+    external: true
+    name: finance_net

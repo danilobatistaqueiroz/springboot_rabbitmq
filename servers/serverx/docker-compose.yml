@@ -1,0 +1,36 @@
+version: "3.2"
+services:
+  serverx:
+    image: rabbitmq:3.11-rc-management
+    hostname: serverx
+    container_name: 'serverx'
+    ports:
+    - "5679:5679"
+    - "15679:15679"
+    - "5559:5559"
+    - "15699:15699"
+    volumes:
+#     - ./advanced.config:/etc/rabbitmq/advanced.config
+    - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+    - rabbitmq_s_net
+    - rabbitmq_p_net
+    - rabbitmq_f_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+    - RABBITMQ_NODENAME=rabbit@serverx
+    - RABBITMQ_NODE_PORT=5679
+    
+networks:
+  rabbitmq_s_net:
+    external: true
+    name: sales_net
+  rabbitmq_p_net:
+    external: true
+    name: purchase_net
+  rabbitmq_f_net:
+    external: true
+    name: finance_net

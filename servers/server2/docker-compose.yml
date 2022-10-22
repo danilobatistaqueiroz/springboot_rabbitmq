@@ -1,0 +1,41 @@
+version: "3.2"
+services:
+  server2:
+    image: rabbitmq:3.10.9-management
+    hostname: server2
+    container_name: 'server2'
+    ports:
+    - "5672:5672"
+    - "15672:15672"
+    - "5552:5552"
+    - "15692:15692"
+    volumes:
+#     - $PWD/advanced.config:/etc/rabbitmq/advanced.config
+    - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    - ./mnesia:/var/lib/rabbitmq/mnesia/rabbit@server2
+    - type: bind
+      source: $PWD/advanced.config
+      target: /etc/rabbitmq/advanced.config
+    - type: bind
+      source: $PWD/.bash_history
+      target: /var/lib/rabbitmq/.bash_history
+    - type: bind
+      source: $PWD/.erlang.cookie
+      target: /var/lib/rabbitmq/.erlang.cookie
+    networks:
+    - rabbitmq_s_net
+    - rabbitmq_p_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+    - RABBITMQ_NODENAME=rabbit@server2
+
+networks:
+  rabbitmq_s_net:
+    external: true
+    name: sales_net
+  rabbitmq_p_net:
+    external: true
+    name: purchase_net

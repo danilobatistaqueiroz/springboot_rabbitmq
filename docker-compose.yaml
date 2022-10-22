@@ -1,0 +1,228 @@
+version: "3.2"
+services:
+  rabbitmq2:
+    image: rabbitmq:3.11-rc-management-alpine
+    hostname: rabbitmq2
+    container_name: 'rabbitmq2'
+    ports:
+    - "5672:5672"
+    - "15672:15672"
+    - "5552:5552"
+    - "15692:15692"
+    volumes:
+#     - ./advanced/rabbitmq2/advanced.config:/etc/rabbitmq/advanced.config
+    - type: bind
+      source: $PWD/advanced/rabbitmq2/advanced.config
+      target: /etc/rabbitmq/advanced.config
+    - type: bind
+      source: $PWD/history/rabbitmq2/.bash_history
+      target: /var/lib/rabbitmq/.bash_history
+    - type: bind
+      source: $PWD/cookie/rabbitmq2/.erlang.cookie
+      target: /var/lib/rabbitmq/.erlang.cookie
+    networks:
+    - rabbitmq_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+#    - RABBITMQ_DIST_PORT=25672
+#    - RABBITMQ_NODE_PORT=5672
+    - RABBITMQ_NODENAME=rabbit@rabbitmq2
+#    - ERL_EPMD_PORT=4369
+  rabbitmq3:
+    image: rabbitmq:3.11-rc-management-alpine
+    hostname: rabbitmq3
+    container_name: 'rabbitmq3'
+    depends_on:
+    - rabbitmq2
+    links:
+    - rabbitmq2
+    ports:
+    - "5673:5672"
+    - "15673:15672"
+    - "5553:5552"
+    - "15693:15692"
+    volumes:
+     - type: bind
+       source: $PWD/advanced/rabbitmq3/advanced.config
+       target: /etc/rabbitmq/advanced.config
+     - type: bind
+       source: $PWD/history/rabbitmq3/.bash_history
+       target: /var/lib/rabbitmq/.bash_history
+     - type: bind
+       source: $PWD/cookie/rabbitmq3/.erlang.cookie
+       target: /var/lib/rabbitmq/.erlang.cookie
+     - type: bind
+       source: $PWD/conf/rabbitmq3/rabbitmq.conf
+       target: /etc/rabbitmq/rabbitmq.conf
+#     - type: bind
+#       source: $PWD/cluster/rabbitmq3/cluster_nodes.config
+#       target: /var/lib/rabbitmq/mnesia/rabbit@rabbitmq3/cluster_nodes.config
+#     - type: bind
+#       source: $PWD/hosts/rabbitmq3/hosts
+#       target: /etc/hosts
+    networks:
+    - rabbitmq_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+#    - RABBITMQ_DIST_PORT=25673
+#    - RABBITMQ_NODE_PORT=5673
+    - RABBITMQ_NODENAME=rabbit@rabbitmq3
+#    - NODE_IP_ADDRESS=
+#    - ERL_EPMD_PORT=4370
+  rabbitmq4:
+    image: rabbitmq:3.11-rc-management-alpine
+    hostname: rabbitmq4
+    container_name: 'rabbitmq4'
+    depends_on:
+    - rabbitmq3
+    links:
+    - rabbitmq2
+    - rabbitmq3
+    ports:
+    - "5674:5672"
+    - "15674:15672"
+    - "5554:5552"
+    - "15694:15692"
+    volumes:
+     - type: bind
+       source: $PWD/advanced/rabbitmq4/advanced.config
+       target: /etc/rabbitmq/advanced.config
+     - type: bind
+       source: $PWD/history/rabbitmq4/.bash_history
+       target: /var/lib/rabbitmq/.bash_history
+     - type: bind
+       source: $PWD/cookie/rabbitmq4/.erlang.cookie
+       target: /var/lib/rabbitmq/.erlang.cookie
+     - type: bind
+       source: $PWD/conf/rabbitmq4/rabbitmq.conf
+       target: /etc/rabbitmq/rabbitmq.conf
+#     - type: bind
+#       source: $PWD/cluster/rabbitmq4/cluster_nodes.config
+#       target: /var/lib/rabbitmq/mnesia/rabbit@rabbitmq4/cluster_nodes.config
+#     - type: bind
+#       source: $PWD/hosts/rabbitmq4/hosts
+#       target: /etc/hosts
+    networks:
+    - rabbitmq_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+    - RABBITMQ_DIST_PORT=25674
+    - RABBITMQ_NODE_PORT=5674
+    - RABBITMQ_NODENAME=rabbit@rabbitmq4
+#    - ERL_EPMD_PORT=4371
+  rabbitmq5:
+    image: rabbitmq:3.11-rc-management-alpine
+    hostname: rabbitmq5
+    container_name: 'rabbitmq5'
+    depends_on:
+    - rabbitmq4
+    links:
+    - rabbitmq2
+    - rabbitmq3
+    - rabbitmq4
+    ports:
+    - "5675:5672"
+    - "15675:15672"
+    - "5555:5552"
+    - "15695:15692"
+    volumes:
+     - type: bind
+       source: $PWD/advanced/rabbitmq5/advanced.config
+       target: /etc/rabbitmq/advanced.config
+     - type: bind
+       source: $PWD/history/rabbitmq5/.bash_history
+       target: /var/lib/rabbitmq/.bash_history
+     - type: bind
+       source: $PWD/cookie/rabbitmq5/.erlang.cookie
+       target: /var/lib/rabbitmq/.erlang.cookie
+     - type: bind
+       source: $PWD/conf/rabbitmq5/rabbitmq.conf
+       target: /etc/rabbitmq/rabbitmq.conf
+#     - type: bind
+#       source: $PWD/cluster/rabbitmq5/cluster_nodes.config
+#       target: /var/lib/rabbitmq/mnesia/rabbit@rabbitmq5/cluster_nodes.config
+#     - type: bind
+#       source: $PWD/hosts/rabbitmq5/hosts
+#       target: /etc/hosts
+    networks:
+    - rabbitmq_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+    - RABBITMQ_DIST_PORT=25675
+    - RABBITMQ_NODE_PORT=5675
+    - RABBITMQ_NODENAME=rabbit@rabbitmq5
+#    - ERL_EPMD_PORT=4372
+  rabbitmq6:
+    image: rabbitmq:3.11-rc-management-alpine
+    hostname: rabbitmq6
+    container_name: 'rabbitmq6'
+    depends_on:
+    - rabbitmq5
+    links:
+    - rabbitmq2
+    - rabbitmq3
+    - rabbitmq4
+    - rabbitmq5
+    ports:
+    - "5676:5672"
+    - "15676:15672"
+    - "5556:5552"
+    - "15696:15692"
+    volumes:
+     - type: bind
+       source: $PWD/advanced/rabbitmq6/advanced.config
+       target: /etc/rabbitmq/advanced.config
+     - type: bind
+       source: $PWD/history/rabbitmq6/.bash_history
+       target: /var/lib/rabbitmq/.bash_history
+     - type: bind
+       source: $PWD/cookie/rabbitmq6/.erlang.cookie
+       target: /var/lib/rabbitmq/.erlang.cookie
+     - type: bind
+       source: $PWD/conf/rabbitmq6/rabbitmq.conf
+       target: /etc/rabbitmq/rabbitmq.conf
+#     - type: bind
+#       source: $PWD/cluster/rabbitmq6/cluster_nodes.config
+#       target: /var/lib/rabbitmq/mnesia/rabbit@rabbitmq6/cluster_nodes.config
+#     - type: bind
+#       source: $PWD/hosts/rabbitmq6/hosts
+#       target: /etc/hosts
+    networks:
+    - rabbitmq_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+    - RABBITMQ_DIST_PORT=25676
+    - RABBITMQ_NODE_PORT=5676
+    - RABBITMQ_NODENAME=rabbit@rabbitmq6
+#    - ERL_EPMD_PORT=4373
+
+  springboot:
+    image: rabbitclient:v1
+    hostname: springboot
+    container_name: 'springboot'
+    ports:
+    - "8085:8085"
+    - "5055:5005"
+    networks:
+    - rabbitmq_net
+
+      
+networks:
+  rabbitmq_net:
+    driver: bridge
+    name: order_net

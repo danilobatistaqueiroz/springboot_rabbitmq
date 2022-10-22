@@ -1,0 +1,11 @@
+version: "3.2"
+networks:
+  rabbitmq_s_net:
+    driver: bridge
+    name: sales_net
+  rabbitmq_f_net:
+    driver: bridge
+    name: finance_net
+  rabbitmq_p_net:
+    driver: bridge
+    name: purchase_net

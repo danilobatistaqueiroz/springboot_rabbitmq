@@ -1,0 +1,164 @@
+##################### excelent tutorial #####################
+https://medium.com/javarevisited/getting-started-with-rabbitmq-in-spring-boot-6323b9179247
+##################### excelent tutorial #####################
+
+
+##################### federation ############################
+
+https://www.rabbitmq.com/federation.html
+
+cd /dados/java/workspace/rabbit_spring/servers/server2
+docker rm -f $(docker ps -a --format "{{.ID}}")
+sudo rm -rf ../server2/mnesia;\
+sudo rm -rf ../server3/mnesia;\
+sudo rm -rf ../serverx/mnesia;
+cd ../server2; docker-compose up -d;\
+cd ../server3; docker-compose up -d;\
+cd ../serverx; docker-compose up -d;
+docker exec server2 rabbitmq-plugins enable rabbitmq_federation;\
+docker exec server3 rabbitmq-plugins enable rabbitmq_federation;\
+docker exec server2 rabbitmq-plugins enable rabbitmq_federation_management;\
+docker exec server3 rabbitmq-plugins enable rabbitmq_federation_management
+
+-----------
+
+rabbitmqctl set_parameter federation-upstream my-upstream \
+'{"uri":"amqp://target.hostname","expires":3600000}'
+
+Web UI	Navigate to Admin > Federation Upstreams > Add a new upstream. Enter "my-upstream" next to Name, "amqp://target.hostname" next to URI, and 36000000 next to Expiry. Click Add upstream.
+
+-----------
+
+rabbitmqctl set_policy --apply-to exchanges federate-me "^amq\." '{"federation-upstream-set":"all"}'
+
+Management UI	Navigate to `Admin` > `Policies` > `Add / update a policy`. Enter "federate-me" next to "Name", "^amq\." next to "Pattern", choose "Exchanges" from the "Apply to" drop down list and enter "federation-upstream-set" = "all" in the first line next to "Policy". Click "Add" policy.
+
+##################### federation ############################
+
+
+cd /dados/java/workspace/rabbit_spring/servers/server2
+
+docker rm -f $(docker ps -a --format "{{.ID}}")
+
+sudo rm -rf ../server2/mnesia; \
+sudo rm -rf ../server3/mnesia; \
+sudo rm -rf ../server4/mnesia; \
+sudo rm -rf ../server5/mnesia; \
+sudo rm -rf ../server6/mnesia; \
+sudo rm -rf ../server7/mnesia; \
+sudo rm -rf ../server8/mnesia;
+
+cd ../server2; docker-compose up -d;
+
+cd ../server3; docker-compose up -d; \
+cd ../server4; docker-compose up -d; \
+cd ../server5; docker-compose up -d; \
+cd ../server6; docker-compose up -d; \
+cd ../server7; docker-compose up -d; \
+cd ../server8; docker-compose up -d;
+
+docker-compose logs -f
+
+docker exec server2 rabbitmqctl set_policy mirrored_queues "^finance.*|^purchase.*" '{"ha-mode":"all"}' --apply-to queues
+
+
+docker network disconnect finance_net server3
+
+
+curl localhost:8092/v1/purchase
+curl localhost:8093/v1/finance
+
+curl localhost:8098/v1/purchase
+curl localhost:8098/v1/finance
+
+curl -X POST localhost:8098/v1/purchase/buy
+curl -X POST localhost:8098/v1/finance/pay
+
+curl -X POST localhost:8092/v1/purchase/buy
+curl -X POST localhost:8093/v1/finance/pay
+
+docker network disconnect sales_net server3; docker network disconnect sales_net server4; docker network disconnect sales_net server5; docker network disconnect sales_net server6;
+
+docker network connect sales_net server3; docker network connect sales_net server4; docker network connect sales_net server5; docker network connect sales_net server6;
+
+docker exec serverx rabbitmq-plugins enable rabbitmq_shovel_management
+docker exec serverx rabbitmq-plugins enable rabbitmq_shovel
+docker exec server3 rabbitmqctl shovel_status
+
+amqp://rabbit_admin:.123-321.@server3:5673/%2f
+
+
+rabbitmqctl cluster_status
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl start_app
+docker exec server2 rabbitmqctl join_cluster rabbit@server3
+#adicione o server2 no cluster em que o server3 está
+rabbitmqctl status
+
+docker exec -it server2 bash
+docker exec server2 rabbitmqctl stop_app
+
+cd ../server6; docker-compose down
+
+docker exec server3 rabbitmqctl forget_cluster_node rabbit@server7
+#retire o server7 do cluster onde o server3 está
+
+
+
+#docker exec server2 rabbitmqctl stop_app;\
+docker exec server3 rabbitmqctl stop_app;\
+docker exec server4 rabbitmqctl stop_app;\
+docker exec server5 rabbitmqctl stop_app;\
+docker exec server6 rabbitmqctl stop_app;\
+docker exec server7 rabbitmqctl stop_app;\
+docker exec server8 rabbitmqctl stop_app;
+
+#docker exec server2 rabbitmqctl start_app;\
+docker exec server3 rabbitmqctl start_app;\
+docker exec server4 rabbitmqctl start_app;\
+docker exec server5 rabbitmqctl start_app;\
+docker exec server6 rabbitmqctl start_app;\
+docker exec server7 rabbitmqctl start_app;\
+docker exec server8 rabbitmqctl start_app;
+
+
+docker exec server7 rabbitmqctl eval 'application:get_all_env(rabbit).'
+
+
+docker exec server2 rabbitmqctl list_queues name, messages_ready, messages_unacknowledged, consumers, consumer_utilisation, state
+
+docker exec server3 rabbitmqctl list_queues name, messages_ready, messages_unacknowledged, consumers, consumer_utilisation, state
+
+
+
+cd /dados/java/workspace/rabbit_spring/servers/server2; docker-compose logs -f;
+
+
+
+docker exec server2 rabbitmqctl enable_feature_flag stream_queue;\
+docker exec server3 rabbitmqctl enable_feature_flag stream_queue;\
+docker exec server4 rabbitmqctl enable_feature_flag stream_queue;\
+docker exec server5 rabbitmqctl enable_feature_flag stream_queue;\
+docker exec server6 rabbitmqctl enable_feature_flag stream_queue;\
+docker exec server7 rabbitmqctl enable_feature_flag stream_queue;\
+docker exec server8 rabbitmqctl enable_feature_flag stream_queue;
+
+docker exec server2 rabbitmq-plugins enable rabbitmq_stream;\
+docker exec server3 rabbitmq-plugins enable rabbitmq_stream;\
+docker exec server4 rabbitmq-plugins enable rabbitmq_stream;\
+docker exec server5 rabbitmq-plugins enable rabbitmq_stream;\
+docker exec server6 rabbitmq-plugins enable rabbitmq_stream;\
+docker exec server7 rabbitmq-plugins enable rabbitmq_stream;\
+docker exec server8 rabbitmq-plugins enable rabbitmq_stream;
+
+
+
+
+
+
+
+########################## super streams ###########################3
+
+https://www.youtube.com/watch?v=20WisE9i9ow
+https://blog.rabbitmq.com/posts/2022/07/rabbitmq-3-11-feature-preview-super-streams

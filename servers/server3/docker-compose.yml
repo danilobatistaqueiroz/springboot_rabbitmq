@@ -1,0 +1,47 @@
+version: "3.2"
+services:
+  server3:
+    image: rabbitmq:3.10.9-management
+    hostname: server3
+    container_name: 'server3'
+    ports:
+    - "5673:5673"
+    - "15673:15673"
+    - "5553:5553"
+    - "15693:15693"
+    volumes:
+#     - ./advanced.config:/etc/rabbitmq/advanced.config
+    - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    - ./mnesia:/var/lib/rabbitmq/mnesia/rabbit@server3
+    - type: bind
+      source: $PWD/advanced.config
+      target: /etc/rabbitmq/advanced.config
+    - type: bind
+      source: $PWD/.bash_history
+      target: /var/lib/rabbitmq/.bash_history
+    - type: bind
+      source: $PWD/.erlang.cookie
+      target: /var/lib/rabbitmq/.erlang.cookie
+    networks:
+    - rabbitmq_s_net
+    - rabbitmq_f_net
+    environment:
+    - RABBITMQ_DEFAULT_USER=rabbit_admin
+    - RABBITMQ_DEFAULT_PASS=.123-321.
+    - RABBITMQ_CONFIG_FILES=/etc/rabbitmq/rabbitmq.conf
+    - RABBITMQ_ADVANCED_CONFIG_FILE=/etc/rabbitmq/advanced.config
+    - RABBITMQ_NODENAME=rabbit@server3
+    - RABBITMQ_NODE_PORT=5673
+    #- RABBITMQ_DIST_PORT=25673
+    #- RABBITMQ_MNESIA_DIR=/var/lib/rabbitmq/mnesia/$RABBITMQ_NODENAME
+
+networks:
+  rabbitmq_s_net:
+    external: true
+    name: sales_net
+  rabbitmq_f_net:
+    external: true
+    name: finance_net
+
+volumes:
+  mnesia:
